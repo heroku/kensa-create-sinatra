@@ -50,6 +50,7 @@ class App < Sinatra::Base
     protected!
     #u = User.create()
     #{id: u.id, config: {"MYADDON_URL" => 'http://user.yourapp.com'}}.to_json
+    status 201
     {id: 1, config: {"MYADDON_URL" => 'http://user.yourapp.com'}}.to_json
   end
 
