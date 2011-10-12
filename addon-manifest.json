@@ -5,6 +5,6 @@
     "password": "CuCJSFYhBDCLqeJ7",
     "sso_salt": "iQQOeKemMUZ2arDZ",
     "production": "https://yourapp.com/",
-    "test": "http://localhost:4567/"
+    "test": "http://localhost:5000/"
   }
 }
