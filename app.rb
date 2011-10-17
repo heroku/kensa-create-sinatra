@@ -6,7 +6,6 @@ require './env'
 
 class App < Sinatra::Base
   use Rack::Session::Cookie, secret: ENV['SSO_SALT']
-  use Heroku::Nav::Provider
 
   helpers do
     def protected!
@@ -23,6 +22,7 @@ class App < Sinatra::Base
     end
   end
   
+=begin
   # sso landing page
   get "/" do
     #sinatra doesn't keep the cookie during the redirect
@@ -30,6 +30,7 @@ class App < Sinatra::Base
     response.set_cookie('heroku-nav-data', value: session[:heroku_sso])
     haml :index
   end
+=end
 
   # sso sign in
   get "/heroku/resources/:id" do
@@ -42,8 +43,8 @@ class App < Sinatra::Base
     halt 404 unless account
 
     session[:heroku_sso] = params['nav-data']
-    response.set_cookie('heroku-nav-data', value: session[:heroku_sso])
-    redirect "/"
+    response.set_cookie('heroku-nav-data', value: params['nav-data'])
+    haml :index
   end
 
   # provision
