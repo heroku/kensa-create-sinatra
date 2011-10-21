@@ -8,7 +8,6 @@ clone it via:
     > gem install kensa
     > kensa create my_addon --template sinatra
     > cd my_addon
-    > cp .env.sample .env
     > foreman start
 
 In a new window: 
