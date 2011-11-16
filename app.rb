@@ -31,7 +31,6 @@ class App < Sinatra::Base
     end
 
     def show_request
-      STDOUT.puts "Users: #{@@users.inspect}"
       body = request.body.read
       unless body.empty?
         STDOUT.puts "request body:"
