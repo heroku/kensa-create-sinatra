@@ -9,12 +9,7 @@ class App < Sinatra::Base
 
   @@users = []
 
-  class User
-    attr_accessor :plan
-    def initialize(plan)
-      @plan = plan
-    end
-  end
+  User = Class.new(OpenStruct)
 
   helpers do
     def protected!
@@ -34,15 +29,19 @@ class App < Sinatra::Base
       body = request.body.read
       unless body.empty?
         STDOUT.puts "request body:"
-        STDOUT.puts JSON.parse(body)
+        STDOUT.puts(@json_body = JSON.parse(body))
       end
       unless params.empty?
         STDOUT.puts "params: #{params.inspect}"
       end
     end
 
+    def json_body
+      @json_body || (body = request.body.read && JSON.parse(body))
+    end
+
     def get_user
-      @@users[params[:id].to_i] or halt 404, 'user not found'
+      @@users.find {|u| u.id == params[:id].to_i } or halt 404, 'user not found'
     end
   end
   
@@ -88,8 +87,9 @@ class App < Sinatra::Base
     show_request
     protected!
     status 201
-    @@users << User.new('test')
-    {id: @@users.size+1, config: {"MYADDON_URL" => 'http://user.yourapp.com'}}.to_json
+    user = User.new(:id => @@users.size + 1, :plan => 'test')
+    @@users << user
+    {id: user.id, config: {"MYADDON_URL" => 'http://user.yourapp.com'}}.to_json
   end
 
   # deprovision
@@ -105,7 +105,7 @@ class App < Sinatra::Base
     show_request
     protected!
     user = get_user 
-    user.plan = params[:plan]
+    user.plan = json_body['plan']
     "ok"
   end
 end
