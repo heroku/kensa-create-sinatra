@@ -87,7 +87,7 @@ class App < Sinatra::Base
     show_request
     protected!
     status 201
-    user = User.new(:id => @@users.size + 1, :plan => 'test')
+    user = User.new(:id => @@users.size + 1, :plan => json_body.fetch('plan', 'test'))
     @@users << user
     {id: user.id, config: {"MYADDON_URL" => 'http://user.yourapp.com'}}.to_json
   end
