@@ -7,9 +7,9 @@ require './env'
 class App < Sinatra::Base
   use Rack::Session::Cookie, secret: ENV['SSO_SALT']
 
-  @@users = []
+  @@resources = []
 
-  User = Class.new(OpenStruct)
+  Resource = Class.new(OpenStruct)
 
   helpers do
     def protected!
@@ -40,20 +40,19 @@ class App < Sinatra::Base
       @json_body || (body = request.body.read && JSON.parse(body))
     end
 
-    def get_user
-      @@users.find {|u| u.id == params[:id].to_i } or halt 404, 'user not found'
+    def get_resource
+      @@resources.find {|u| u.id == params[:id].to_i } or halt 404, 'resource not found'
     end
   end
   
-=begin
   # sso landing page
   get "/" do
-    #sinatra doesn't keep the cookie during the redirect
-    halt 403 unless session[:heroku_sso]
-    response.set_cookie('heroku-nav-data', value: session[:heroku_sso])
+    halt 403, 'not logged in' unless session[:heroku_sso]
+    #response.set_cookie('heroku-nav-data', value: session[:heroku_sso])
+    @resource = session[:resource]
+    @email    = session[:email]
     haml :index
   end
-=end
 
   def sso
     pre_token = params[:id] + ':' + ENV['SSO_SALT'] + ':' + params[:timestamp]
@@ -61,14 +60,13 @@ class App < Sinatra::Base
     halt 403 if token != params[:token]
     halt 403 if params[:timestamp].to_i < (Time.now - 2*60).to_i
 
-    account = true #User.get(params[:id])
-    halt 404 unless account
+    halt 404 unless session[:resource]   = get_resource
 
-    session[:heroku_sso] = params['nav-data']
     response.set_cookie('heroku-nav-data', value: params['nav-data'])
+    session[:heroku_sso] = params['nav-data']
+    session[:email]      = params[:email]
 
-    @user = get_user
-    haml :index
+    redirect '/'
   end
   
   # sso sign in
@@ -87,16 +85,17 @@ class App < Sinatra::Base
     show_request
     protected!
     status 201
-    user = User.new(:id => @@users.size + 1, :plan => json_body.fetch('plan', 'test'))
-    @@users << user
-    {id: user.id, config: {"MYADDON_URL" => 'http://user.yourapp.com'}}.to_json
+    resource = Resource.new(:id => @@resources.size + 1, 
+                            :plan => json_body.fetch('plan', 'test'))
+    @@resources << resource
+    {id: resource.id, config: {"MYADDON_URL" => 'http://user.yourapp.com'}}.to_json
   end
 
   # deprovision
   delete '/heroku/resources/:id' do
     show_request
     protected!
-    @@users.delete(get_user)
+    @@resources.delete(get_resource)
     "ok"
   end
 
@@ -104,8 +103,8 @@ class App < Sinatra::Base
   put '/heroku/resources/:id' do
     show_request
     protected!
-    user = get_user 
-    user.plan = json_body['plan']
+    resource = get_resource 
+    resource.plan = json_body['plan']
     "ok"
   end
 end
