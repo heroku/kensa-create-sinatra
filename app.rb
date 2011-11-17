@@ -57,7 +57,6 @@ class App < Sinatra::Base
 =end
 
   def sso
-    show_request
     pre_token = params[:id] + ':' + ENV['SSO_SALT'] + ':' + params[:timestamp]
     token = Digest::SHA1.hexdigest(pre_token).to_s
     halt 403 if token != params[:token]
@@ -75,10 +74,12 @@ class App < Sinatra::Base
   
   # sso sign in
   get "/heroku/resources/:id" do
+    show_request
     sso
   end
 
   post '/sso/login' do
+    puts params.inspect
     sso
   end
 
