@@ -13,6 +13,7 @@ clone it via:
 
 In a new window: 
 
+    > kensa test provision
     > kensa sso 1
 
 And you should be in a Heroku Single Sign On sesion for your brand new addon! 
