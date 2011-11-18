@@ -2,7 +2,6 @@ require 'bundler'
 Bundler.require
 require 'sinatra/base'
 require 'heroku/nav'
-require './env'
 
 class App < Sinatra::Base
   use Rack::Session::Cookie, secret: ENV['SSO_SALT']
