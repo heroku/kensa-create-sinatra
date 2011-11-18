@@ -3,7 +3,8 @@
   %head
   %body
     = Heroku::Nav::Provider.html
-    %p Hello, user #{@resource.id}.
+    %p Hello!
+    %p You are using resource #{@resource.id}.
     %p You are on plan #{@resource.plan}
     %p You logged in with email #{@email}
     
