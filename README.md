@@ -13,6 +13,7 @@ clone it via:
 
 In a new window: 
 
+    > cd my_addon
     > kensa test provision
     > kensa sso 1
 
