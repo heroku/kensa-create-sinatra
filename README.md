@@ -18,3 +18,10 @@ In a new window:
     > kensa sso 1
 
 And you should be in a Heroku Single Sign On sesion for your brand new addon! 
+
+## Current status: 
+- deprovision - working
+- provision   - working
+- planchange  - working
+- GET SSO     - working
+- POST SSO    - working
