@@ -3,6 +3,8 @@ Bundler.require
 require 'sinatra/base'
 require 'heroku/nav'
 
+STDOUT.sync = true
+
 class App < Sinatra::Base
   use Rack::Session::Cookie, secret: ENV['SSO_SALT']
 
