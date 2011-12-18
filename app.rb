@@ -5,12 +5,11 @@ require 'heroku/nav'
 
 STDOUT.sync = true
 
+DB = Sequel.connect ENV['DATABASE_URL']
+Resource = DB[:resources]
+
 class App < Sinatra::Base
   use Rack::Session::Cookie, secret: ENV['SSO_SALT']
-
-  @@resources = []
-
-  Resource = Class.new(OpenStruct)
 
   helpers do
     def protected!
@@ -41,8 +40,8 @@ class App < Sinatra::Base
       @json_body || (body = request.body.read && JSON.parse(body))
     end
 
-    def get_resource
-      @@resources.find {|u| u.id == params[:id].to_i } or halt 404, 'resource not found'
+    def get_resource(id)
+      Resource[:id => id] or halt 404, 'resource not found'
     end
   end
   
@@ -50,7 +49,7 @@ class App < Sinatra::Base
   get "/" do
     halt 403, 'not logged in' unless session[:heroku_sso]
     #response.set_cookie('heroku-nav-data', value: session[:heroku_sso])
-    @resource = session[:resource]
+    @resource = get_resource(session[:resource])
     @email    = session[:email]
     haml :index
   end
@@ -61,7 +60,7 @@ class App < Sinatra::Base
     halt 403 if token != params[:token]
     halt 403 if params[:timestamp].to_i < (Time.now - 2*60).to_i
 
-    halt 404 unless session[:resource]   = get_resource
+    halt 404 unless session[:resource]   = params[:id]
 
     response.set_cookie('heroku-nav-data', value: params['nav-data'])
     session[:heroku_sso] = params['nav-data']
@@ -86,26 +85,25 @@ class App < Sinatra::Base
     show_request
     protected!
     status 201
-    resource = Resource.new(:id => @@resources.size + 1, 
-                            :plan => json_body.fetch('plan', 'test'))
-    @@resources << resource
-    {id: resource.id, config: {"MYADDON_URL" => 'http://user.yourapp.com'}}.to_json
+    id = Resource.insert(:plan => json_body.fetch('plan', 'test'))
+    {id: id, config: {"MYADDON_URL" => 'http://user.yourapp.com/' + id.to_s}}.to_json
   end
 
   # deprovision
   delete '/heroku/resources/:id' do
     show_request
     protected!
-    @@resources.delete(get_resource)
+    get_resource(params[:id])
+    puts Resource.filter(:id => params[:id]).delete
     "ok"
   end
 
   # plan change
   put '/heroku/resources/:id' do
     show_request
-    protected!
-    resource = get_resource 
-    resource.plan = json_body['plan']
+    protected!  
+    get_resource(params[:id]) 
+    Resource.filter(:id => params[:id]).update(:plan => json_body['plan'])
     "ok"
   end
 end
