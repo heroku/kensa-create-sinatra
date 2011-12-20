@@ -3,9 +3,13 @@
 this repository is a sinatra template application for use with the 
 Heroku <a href="http://github.com/heroku/kensa">kensa</a> gem
 
-clone it via:
+dependencies:
 
     > gem install kensa
+    > gem install foreman
+
+clone it via:
+
     > kensa create my_addon --template sinatra
     > cd my_addon
     > bundle install
