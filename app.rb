@@ -79,6 +79,7 @@ class App < Sinatra::Base
     sso
   end
 
+
   # provision
   post '/heroku/resources' do
     show_request
@@ -87,7 +88,7 @@ class App < Sinatra::Base
     resource = Resource.new(:id => @@resources.size + 1, 
                             :plan => json_body.fetch('plan', 'test'))
     @@resources << resource
-    {id: resource.id, config: {"MYADDON_URL" => 'http://user.yourapp.com'}}.to_json
+    {id: resource.id, async: 'true', config: {"MYADDON_URL" => 'http://user.yourapp.com'}}.to_json
   end
 
   # deprovision
@@ -104,6 +105,6 @@ class App < Sinatra::Base
     protected!
     resource = get_resource 
     resource.plan = json_body['plan']
-    "ok"
+    {}.to_json
   end
 end
