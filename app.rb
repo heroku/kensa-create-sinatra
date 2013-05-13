@@ -20,7 +20,7 @@ class App < Sinatra::Base
 
     def authorized?
       @auth ||=  Rack::Auth::Basic::Request.new(request.env)
-      @auth.provided? && @auth.basic? && @auth.credentials && 
+      @auth.provided? && @auth.basic? && @auth.credentials &&
       @auth.credentials == [ENV['HEROKU_USERNAME'], ENV['HEROKU_PASSWORD']]
     end
 
@@ -43,7 +43,7 @@ class App < Sinatra::Base
       @@resources.find {|u| u.id == params[:id].to_i } or halt 404, 'resource not found'
     end
   end
-  
+
   # sso landing page
   get "/" do
     halt 403, 'not logged in' unless session[:heroku_sso]
@@ -67,7 +67,7 @@ class App < Sinatra::Base
 
     redirect '/'
   end
-  
+
   # sso sign in
   get "/heroku/resources/:id" do
     show_request
@@ -85,7 +85,7 @@ class App < Sinatra::Base
     show_request
     protected!
     status 201
-    resource = Resource.new(:id => @@resources.size + 1, 
+    resource = Resource.new(:id => @@resources.size + 1,
                             :plan => json_body.fetch('plan', 'test'))
     @@resources << resource
     {id: resource.id, config: {"MYADDON_URL" => 'http://yourapp.com/user'}}.to_json
@@ -103,7 +103,7 @@ class App < Sinatra::Base
   put '/heroku/resources/:id' do
     show_request
     protected!
-    resource = get_resource 
+    resource = get_resource
     resource.plan = json_body['plan']
     {}.to_json
   end
