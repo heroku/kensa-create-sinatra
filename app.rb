@@ -83,19 +83,22 @@ class App < Sinatra::Base
   post '/heroku/resources' do
     show_request
     protected!
-    status 201
-    resource = Resource.new(:id => @@resources.size + 1,
+    if json_body['region'] != 'amazon-web-services::us-east-1'
+      status 422
+      body({:error => 'Region is not supported by this provider.'}.to_json)
+    end
+    @@resources << resource = Resource.new(:id => @@resources.size + 1,
                             :heroku_id => json_body['heroku_id'],
                             :plan => json_body.fetch('plan', 'test'),
                             :region => json_body['region'],
                             :callback_url => json_body['callback_url'],
                             :options => json_body['options'])
-    @@resources << resource
-    {
+    status 201
+    body({
       :id => resource.id,
       :config => {"MYADDON_URL" => 'http://yourapp.com/user'},
       :message => 'Dear customer, your addon is now provisioned!'
-    }.to_json
+    }.to_json)
   end
 
   # deprovision
