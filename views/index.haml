@@ -4,7 +4,9 @@
     %script{src: 'https://s3.amazonaws.com/assets.heroku.com/boomerang/boomerang.js' }
     :javascript
       document.addEventListener("DOMContentLoaded", function() {
-        Boomerang.init({app: 'foo', addon: 'bar'});
+        // app:   The current user's application slug (example: 'fierce-fugu-42')
+        // addon: Your add-on slug (example: 'heroku-postgresql')
+        Boomerang.init({app: 'CHANGEME', addon: 'CHANGEME'});
       });
 
   %body
