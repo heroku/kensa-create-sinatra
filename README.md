@@ -19,6 +19,11 @@ In a new window:
 
 And you should be in a Heroku Single Sign On session for your brand new addon! 
 
+## Heroku Nav
+
+For more information on Heroku's standard SSO navigation bar, Boomerang, check
+out the project [on GitHub](https://github.com/heroku/boomerang).
+
 ## Current status: 
 - deprovision - working
 - provision   - working

@@ -1,8 +1,13 @@
 !!!
 %html
   %head
+    %script{src: 'https://s3.amazonaws.com/assets.heroku.com/boomerang/boomerang.js' }
+    :javascript
+      document.addEventListener("DOMContentLoaded", function() {
+        Boomerang.init({app: 'foo', addon: 'bar'});
+      });
+
   %body
-    = Heroku::Nav::Provider.html
     %p Hello!
     %p You are using resource: #{@resource.id}.
     %p Located in: #{@resource.region}.
