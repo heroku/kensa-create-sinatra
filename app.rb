@@ -97,7 +97,7 @@ class App < Sinatra::Base
     body({
       :id => resource.id,
       :config => {"MYADDON_URL" => 'http://yourapp.com/user'},
-      :message => 'Optional success message here!'
+      # :message => 'Optional success message here!'
     }.to_json)
   end
 
