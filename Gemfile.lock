@@ -10,7 +10,7 @@ GEM
     haml (4.0.5)
       tilt
     heroku-nav (0.2.2)
-    json (1.8.1)
+    json (2.3.0)
     rack (1.5.2)
     rack-protection (1.5.2)
       rack
